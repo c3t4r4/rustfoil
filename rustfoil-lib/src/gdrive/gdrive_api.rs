@@ -36,7 +36,7 @@ impl GoogleDriveApiService {
         let hub = DriveHub::new(
             hyper::Client::builder().build(
                 hyper_rustls::HttpsConnectorBuilder::new()
-                    .with_native_roots()
+                    .with_native_roots()?
                     .https_or_http()
                     .enable_http1()
                     .build(),
@@ -365,12 +365,12 @@ impl GoogleDriveApiService {
                     .1
             }
         };
-
+        
         let is_shared = self.is_file_shared(&res).await?;
 
         Ok(GoogleDriveFileInfo::new(
             res.id.unwrap(),
-            res.size.unwrap(),
+            res.size.unwrap_or(0),
             res.name.unwrap(),
             is_shared,
         ))
